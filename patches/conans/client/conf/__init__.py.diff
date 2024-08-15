@@ -1,0 +1,27 @@
+diff --git a/conans/client/conf/__init__.py b/conans/client/conf/__init__.py
+index 33c9db521..4fa22e1ce 100644
+--- a/conans/client/conf/__init__.py
++++ b/conans/client/conf/__init__.py
+@@ -74,6 +74,7 @@ os:
+     baremetal:
+     VxWorks:
+         version: ["7"]
++    z/OS:
+ arch: [x86, x86_64, ppc32be, ppc32, ppc64le, ppc64,
+        armv4, armv4i, armv5el, armv5hf, armv6, armv7, armv7hf, armv7s, armv7k, armv8, armv8_32, armv8.3, arm64ec,
+        sparc, sparcv9,
+@@ -127,6 +128,14 @@ compiler:
+         libcxx: [libstdc++, libc++]
+         cppstd: [null, 98, gnu98, 11, gnu11, 14, gnu14, 17, gnu17, 20, gnu20, 23, gnu23]
+         cstd: [null, 99, gnu99, 11, gnu11, 17, gnu17, 23, gnu23]
++    ibm-clang:
++        version: ["1.1", "2.1"]
++        libcxx: [null, libc++, c++_shared, c++_static]
++        cppstd: [null, 98, gnu98, 11, gnu11, 14, gnu14, 17, gnu17]
++        runtime: [null, static, dynamic]
++        runtime_type: [null, Debug, Release]
++        runtime_version: [null, v140, v141, v142, v143, v144]
++        cstd: [null, 99, gnu99, 11, gnu11, 17, gnu17]
+     intel-cc:
+         version: ["2021.1", "2021.2", "2021.3", "2021.4", "2022.1", "2022.2",
+                   "2022.3", "2023.0", "2023.1", "2023.2", "2024.0",]

@@ -1,0 +1,13 @@
+diff --git a/conan/tools/gnu/gnudeps_flags.py b/conan/tools/gnu/gnudeps_flags.py
+index ba9d399f4..94078bc9d 100644
+--- a/conan/tools/gnu/gnudeps_flags.py
++++ b/conan/tools/gnu/gnudeps_flags.py
+@@ -34,7 +34,7 @@ class GnuDepsFlags(object):
+         # self.build_paths
+         # self.src_paths
+ 
+-    _GCC_LIKE = ['clang', 'apple-clang', 'gcc']
++    _GCC_LIKE = ['clang', 'apple-clang', 'ibm-clang', 'gcc']
+ 
+     @staticmethod
+     def _format_defines(defines):

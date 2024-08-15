@@ -1,0 +1,56 @@
+diff --git a/conan/tools/meson/toolchain.py b/conan/tools/meson/toolchain.py
+index 743d38cbb..b65ff2063 100644
+--- a/conan/tools/meson/toolchain.py
++++ b/conan/tools/meson/toolchain.py
+@@ -9,7 +9,7 @@ from conan.internal.internal_tools import raise_on_universal_arch
+ from conan.tools.apple.apple import is_apple_os, apple_min_version_flag, \
+     resolve_apple_flags
+ from conan.tools.build.cross_building import cross_building
+-from conan.tools.build.flags import libcxx_flags
++from conan.tools.build.flags import architecture_flag, libcxx_flags
+ from conan.tools.env import VirtualBuildEnv
+ from conan.tools.meson.helpers import *
+ from conan.tools.microsoft import VCVars, msvc_runtime_flag
+@@ -250,7 +250,10 @@ class MesonToolchain(object):
+                 default_comp = "clang"
+                 default_comp_cpp = "clang++"
+         else:
+-            if "clang" in compiler:
++            if compiler == "ibm-clang":
++                default_comp = "ibm-clang"
++                default_comp_cpp = "ibm-clang++"
++            elif "clang" in compiler:
+                 default_comp = "clang"
+                 default_comp_cpp = "clang++"
+             elif compiler == "gcc":
+@@ -455,16 +458,22 @@ class MesonToolchain(object):
+         apple_flags = self.apple_isysroot_flag + self.apple_arch_flag + self.apple_min_version_flag
+         extra_flags = self._get_extra_flags()
+ 
+-        self.c_args.extend(apple_flags + extra_flags["cflags"] + extra_flags["defines"])
+-        self.cpp_args.extend(apple_flags + extra_flags["cxxflags"] + extra_flags["defines"])
+-        self.c_link_args.extend(apple_flags + extra_flags["ldflags"])
+-        self.cpp_link_args.extend(apple_flags + extra_flags["ldflags"])
++        arch_flag = architecture_flag(self._conanfile.settings)
++        if not arch_flag:
++            arch_flag = []
++        else:
++            arch_flag = [arch_flag]
++
++        self.c_args.extend(apple_flags + arch_flag + extra_flags["cflags"] + extra_flags["defines"])
++        self.cpp_args.extend(apple_flags + arch_flag + extra_flags["cxxflags"] + extra_flags["defines"])
++        self.c_link_args.extend(apple_flags + arch_flag + extra_flags["ldflags"])
++        self.cpp_link_args.extend(apple_flags + arch_flag + extra_flags["ldflags"])
+         # Objective C/C++
+-        self.objc_args.extend(self.c_args + extra_flags["defines"])
+-        self.objcpp_args.extend(self.cpp_args + extra_flags["defines"])
++        self.objc_args.extend(self.c_args + arch_flag + extra_flags["defines"])
++        self.objcpp_args.extend(self.cpp_args + arch_flag + extra_flags["defines"])
+         # These link_args have already the LDFLAGS env value so let's add only the new possible ones
+-        self.objc_link_args.extend(apple_flags + extra_flags["ldflags"])
+-        self.objcpp_link_args.extend(apple_flags + extra_flags["ldflags"])
++        self.objc_link_args.extend(apple_flags + arch_flag + extra_flags["ldflags"])
++        self.objcpp_link_args.extend(apple_flags + arch_flag + extra_flags["ldflags"])
+ 
+         if self.libcxx:
+             self.cpp_args.append(self.libcxx)

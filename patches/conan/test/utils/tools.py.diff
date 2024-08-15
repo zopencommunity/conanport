@@ -1,0 +1,20 @@
+diff --git a/conan/test/utils/tools.py b/conan/test/utils/tools.py
+index a1f98a39a..59ed512df 100644
+--- a/conan/test/utils/tools.py
++++ b/conan/test/utils/tools.py
+@@ -79,6 +79,15 @@ default_profiles = {
+         compiler.version=13
+         compiler.libcxx=libc++
+         build_type=Release
++        """),
++    "z/OS": textwrap.dedent(f"""\
++        [settings]
++        os=z/OS
++        arch=s390x
++        compiler=ibm-clang
++        compiler.version=2.1
++        compiler.libcxx=libc++
++        build_type=Release
+         """)
+ }
+ 
