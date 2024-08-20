@@ -1,0 +1,101 @@
+diff --git a/conan/tools/build/flags.py b/conan/tools/build/flags.py
+index 8b20fed3d..1663c10b0 100644
+--- a/conan/tools/build/flags.py
++++ b/conan/tools/build/flags.py
+@@ -26,7 +26,7 @@ def architecture_flag(settings):
+         # TODO: Maybe Clang-Mingw runtime does, but with C++ is impossible to test
+         return {"x86_64": "-m64",
+                 "x86": "-m32"}.get(arch, "")
+-    elif compiler in ['gcc', 'apple-clang', 'clang', 'sun-cc']:
++    elif compiler in ['gcc', 'apple-clang', 'clang', 'ibm-clang', 'sun-cc']:
+         if the_os == 'Macos' and subsystem == 'catalyst':
+             # FIXME: This might be conflicting with Autotools --target cli arg
+             apple_arch = _to_apple_arch(arch)
+@@ -39,7 +39,10 @@ def architecture_flag(settings):
+         elif arch in ['x86', 'sparc']:
+             return '-m32'
+         elif arch in ['s390']:
+-            return '-m31'
++            if the_os == 'z/OS':
++                return '-m32'
++            else:
++                return '-m31'
+         elif the_os == 'AIX':
+             if arch in ['ppc32']:
+                 return '-maix32'
+@@ -70,6 +73,9 @@ def libcxx_flags(conanfile):
+     if compiler == "apple-clang":
+         # In apple-clang 2 only values atm are "libc++" and "libstdc++"
+         lib = f'-stdlib={libcxx}'
++    if compiler == "ibm-clang":
++        # In ibm-clang only "libc++" is supported
++        lib = f'-stdlib=libc++'
+     elif compiler == "clang" or compiler == "intel-cc":
+         if libcxx == "libc++":
+             lib = "-stdlib=libc++"
+@@ -146,7 +152,7 @@ def build_type_flags(settings):
+         # Modules/Compiler/GNU.cmake
+         # clang include the gnu (overriding some things, but not build type) and apple clang
+         # overrides clang but it doesn't touch clang either
+-        if compiler in ["clang", "gcc", "apple-clang", "qcc", "mcst-lcc"]:
++        if compiler in ["clang", "gcc", "apple-clang", "ibm-clang", "qcc", "mcst-lcc"]:
+             flags = {"Debug": ["-g"],
+                      "Release": ["-O3"],
+                      "RelWithDebInfo": ["-O2", "-g"],
+@@ -189,6 +195,7 @@ def cppstd_flag(conanfile) -> str:
+     func = {"gcc": _cppstd_gcc,
+             "clang": _cppstd_clang,
+             "apple-clang": _cppstd_apple_clang,
++            "ibm-clang": _cppstd_ibm_clang,
+             "msvc": _cppstd_msvc,
+             "intel-cc": _cppstd_intel_cc,
+             "mcst-lcc": _cppstd_mcst_lcc}.get(compiler)
+@@ -335,6 +342,40 @@ def _cppstd_clang(clang_version, cppstd):
+     return f'-std={flag}' if flag else None
+ 
+ 
++def _cppstd_ibm_clang(clang_version, cppstd):
++    """
++    https://www.ibm.com/docs/en/open-xl-c-cpp-zos/2.1?topic=guide-language-support
++    """
++    v98 = vgnu98 = v11 = vgnu11 = v14 = vgnu14 = v17 = vgnu17 = v20 = vgnu20 = v23 = vgnu23 = None
++
++    if clang_version >= "1.1":
++        v98 = "c++98"
++        vgnu98 = "gnu++98"
++        v11 = "c++11"
++        vgnu11 = "gnu++11"
++        v14 = "c++14"
++        vgnu14 = "gnu++14"
++        v17 = "c++17"
++        vgnu17 = "gnu++17"
++    # Unsupported but "works" - may experience major ABI issues
++    #   v20 = "c++20"
++    #   vgnu20 = "gnu++20"
++    # if clang_version >= "2.1":
++    #     v23 = "c++23"
++    #     vgnu23 = "gnu++23"
++    # elif clang_version >= "1.1":
++    #     v23 = "c++2b"
++    #     vgnu23 = "gnu++2b"
++
++    flag = {"98": v98, "gnu98": vgnu98,
++            "11": v11, "gnu11": vgnu11,
++            "14": v14, "gnu14": vgnu14,
++            "17": v17, "gnu17": vgnu17,
++            "20": v20, "gnu20": vgnu20,
++            "23": v23, "gnu23": vgnu23}.get(cppstd)
++    return f'-std={flag}' if flag else None
++
++
+ def _cppstd_gcc(gcc_version, cppstd):
+     """https://github.com/Kitware/CMake/blob/master/Modules/Compiler/GNU-CXX.cmake"""
+     # https://gcc.gnu.org/projects/cxx-status.html
+@@ -508,6 +549,7 @@ def cstd_flag(conanfile) -> str:
+     func = {"gcc": _cstd_gcc,
+             "clang": _cstd_clang,
+             "apple-clang": _cstd_apple_clang,
++            "ibm-clang": _cstd_clang,
+             "msvc": _cstd_msvc}.get(compiler)
+     flag = None
+     if func:

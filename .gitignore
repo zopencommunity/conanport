@@ -1,5 +1,6 @@
-log/
-log.DEV/
-log.STABLE/
-build/
-install/
+/build/
+/conan/
+/install/
+/log/
+/log.DEV/
+/log.STABLE/

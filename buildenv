@@ -1,31 +1,81 @@
-# Update bump details accordingly. Use bump check to confirm.
 # bump: conan-version /CONAN_VERSION="(.*)"/ https://github.com/conan-io/conan.git|semver:*
-# CONAN_VERSION="2.6.0" # Specify a stable release
-# export ZOPEN_STABLE_TAG="v${CONAN_VERSION}"
-export ZOPEN_STABLE_URL="git@github.com:conan-io/conan.git"
-export ZOPEN_STABLE_DEPS="python"
-export ZOPEN_DEV_URL="git@github.com:conan-io/conan.git"
-export ZOPEN_DEV_DEPS="python"
-export ZOPEN_BUILD_LINE="STABLE"
-export ZOPEN_RUNTIME_DEPS="python"
-export ZOPEN_CATEGORIES="development devops"
 
-zopen_check_results()
-{
-  dir="$1"
-  pfx="$2"
-  chk="$1/$2_check.log"
+CONAN_VERSION='2.6.0'
+export ZOPEN_STABLE_TAG="${CONAN_VERSION}"
+export ZOPEN_STABLE_URL='https://github.com/conan-io/conan.git'
+export ZOPEN_STABLE_DEPS='python'
 
-  # Echo the following information to gauge build health
-  echo "actualFailures:0"
-  echo "totalTests:1"
-  echo "expectedFailures:0"
-  echo "expectedTotalTests:1"
+export ZOPEN_DEV_URL='https://github.com/conan-io/conan.git'
+export ZOPEN_DEV_DEPS='python'
+
+export ZOPEN_BUILD_LINE='STABLE'
+export ZOPEN_RUNTIME_DEPS='python'
+
+export ZOPEN_CATEGORIES='development devops'
+
+if [ -z "$ZOPEN_COMP" ]; then
+    export ZOPEN_COMP='python'
+fi
+
+if [ -z "$ZOPEN_CHECK" ]; then
+  export ZOPEN_CHECK='zopen_check'
+fi
+export ZOPEN_CHECK_MINIMAL='yes'
+
+export ZOPEN_CONFIGURE='skip'
+
+export ZOPEN_MAKE='zopen_build'
+export ZOPEN_MAKE_MINIMAL='yes'
+
+export ZOPEN_INSTALL='zopen_install'
+
+zopen_build() {
+    python -m venv .venv
+    . .venv/bin/activate
+    pip install setuptools build installer wheel && \
+    pip install -e . && \
+    rm -r dist && \
+    python -m build --wheel
+    deactivate
 }
 
-zopen_get_version()
-{
-  # Modify to echo the version of your tool/library
-  # Rather than hardcoding the version, obtain the version by running the tool/library
-  echo "$CONAN_VERSION"
+zopen_check() {
+    echo $@
+    . .venv/bin/activate
+    pip install -r conans/requirements.txt
+    pip install -r conans/requirements_server.txt
+    pip install -r conans/requirements_dev.txt
+    pytest . --ignore=build
+    deactivate
+}
+
+zopen_check_results() {
+    dir="$1"
+    pfx="$2"
+    chk="$1/$2_check.log"
+    summary="$(tail -n 1 "$chk")"
+
+    # Summarise pytest summary line
+    failed="$(echo "$summary" | sed -n 's/^.* \([0-9]*\) failed.*$/\1/p')"
+    errors="$(echo "$summary" | sed -n 's/^.* \([0-9]*\) errors.*$/\1/p')"
+    xfailed="$(echo "$summary" | sed -n 's/^.* \([0-9]*\) xfailed.*$/\1/p')"
+    passed="$(echo "$summary" | sed -n 's/^.* \([0-9]*\) passed.*$/\1/p')"
+    skipped="$(echo "$summary" | sed -n 's/^.* \([0-9]*\) skipped.*$/\1/p')"
+
+    echo "actualFailures:$(( $failed + $errors ))"
+    echo "totalTests:$(( $failed + $errors + $xfailed + $passed + $skipped ))"
+    echo 'expectedFailures:2253'
+    echo 'expectedTotalTests:4628'
+}
+
+zopen_get_version() {
+    "${ZOPEN_INSTALL_DIR}/bin/conan" --version | sed 's/Conan version //'
+}
+
+zopen_install() {
+    . .venv/bin/activate
+    python -m installer --destdir="${ZOPEN_INSTALL_DIR}" --prefix='' dist/*.whl && \
+    chtag -tc iso8859-1 "${ZOPEN_INSTALL_DIR}/bin/conan" && \
+    cp dist/*.whl "${ZOPEN_INSTALL_DIR}/lib/"
+    deactivate
 }
