@@ -1,5 +1,5 @@
 diff --git a/conan/tools/build/flags.py b/conan/tools/build/flags.py
-index 8b20fed3d..1663c10b0 100644
+index 9ab6b3cfc..7e3669760 100644
 --- a/conan/tools/build/flags.py
 +++ b/conan/tools/build/flags.py
 @@ -26,7 +26,7 @@ def architecture_flag(settings):
@@ -20,10 +20,10 @@ index 8b20fed3d..1663c10b0 100644
 +                return '-m32'
 +            else:
 +                return '-m31'
+         elif arch in ['tc131', 'tc16', 'tc161', 'tc162', 'tc18']:
+             return '-m{}'.format(arch)
          elif the_os == 'AIX':
-             if arch in ['ppc32']:
-                 return '-maix32'
-@@ -70,6 +73,9 @@ def libcxx_flags(conanfile):
+@@ -72,6 +75,9 @@ def libcxx_flags(conanfile):
      if compiler == "apple-clang":
          # In apple-clang 2 only values atm are "libc++" and "libstdc++"
          lib = f'-stdlib={libcxx}'
@@ -33,7 +33,7 @@ index 8b20fed3d..1663c10b0 100644
      elif compiler == "clang" or compiler == "intel-cc":
          if libcxx == "libc++":
              lib = "-stdlib=libc++"
-@@ -146,7 +152,7 @@ def build_type_flags(settings):
+@@ -148,7 +154,7 @@ def build_type_flags(settings):
          # Modules/Compiler/GNU.cmake
          # clang include the gnu (overriding some things, but not build type) and apple clang
          # overrides clang but it doesn't touch clang either
@@ -42,7 +42,7 @@ index 8b20fed3d..1663c10b0 100644
              flags = {"Debug": ["-g"],
                       "Release": ["-O3"],
                       "RelWithDebInfo": ["-O2", "-g"],
-@@ -189,6 +195,7 @@ def cppstd_flag(conanfile) -> str:
+@@ -191,6 +197,7 @@ def cppstd_flag(conanfile) -> str:
      func = {"gcc": _cppstd_gcc,
              "clang": _cppstd_clang,
              "apple-clang": _cppstd_apple_clang,
@@ -50,7 +50,7 @@ index 8b20fed3d..1663c10b0 100644
              "msvc": _cppstd_msvc,
              "intel-cc": _cppstd_intel_cc,
              "mcst-lcc": _cppstd_mcst_lcc}.get(compiler)
-@@ -335,6 +342,40 @@ def _cppstd_clang(clang_version, cppstd):
+@@ -348,6 +355,40 @@ def _cppstd_clang(clang_version, cppstd):
      return f'-std={flag}' if flag else None
  
  
@@ -91,7 +91,7 @@ index 8b20fed3d..1663c10b0 100644
  def _cppstd_gcc(gcc_version, cppstd):
      """https://github.com/Kitware/CMake/blob/master/Modules/Compiler/GNU-CXX.cmake"""
      # https://gcc.gnu.org/projects/cxx-status.html
-@@ -508,6 +549,7 @@ def cstd_flag(conanfile) -> str:
+@@ -526,6 +567,7 @@ def cstd_flag(conanfile) -> str:
      func = {"gcc": _cstd_gcc,
              "clang": _cstd_clang,
              "apple-clang": _cstd_apple_clang,
