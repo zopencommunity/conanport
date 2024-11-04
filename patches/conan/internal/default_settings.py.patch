@@ -1,8 +1,8 @@
-diff --git a/conans/client/conf/__init__.py b/conans/client/conf/__init__.py
-index 33c9db521..4fa22e1ce 100644
---- a/conans/client/conf/__init__.py
-+++ b/conans/client/conf/__init__.py
-@@ -74,6 +74,7 @@ os:
+diff --git a/conan/internal/default_settings.py b/conan/internal/default_settings.py
+index 0c6f0db6b..7d7c88192 100644
+--- a/conan/internal/default_settings.py
++++ b/conan/internal/default_settings.py
+@@ -87,6 +87,7 @@ os:
      baremetal:
      VxWorks:
          version: ["7"]
@@ -10,9 +10,9 @@ index 33c9db521..4fa22e1ce 100644
  arch: [x86, x86_64, ppc32be, ppc32, ppc64le, ppc64,
         armv4, armv4i, armv5el, armv5hf, armv6, armv7, armv7hf, armv7s, armv7k, armv8, armv8_32, armv8.3, arm64ec,
         sparc, sparcv9,
-@@ -127,6 +128,14 @@ compiler:
+@@ -141,6 +142,14 @@ compiler:
          libcxx: [libstdc++, libc++]
-         cppstd: [null, 98, gnu98, 11, gnu11, 14, gnu14, 17, gnu17, 20, gnu20, 23, gnu23]
+         cppstd: [null, 98, gnu98, 11, gnu11, 14, gnu14, 17, gnu17, 20, gnu20, 23, gnu23, 26, gnu26]
          cstd: [null, 99, gnu99, 11, gnu11, 17, gnu17, 23, gnu23]
 +    ibm-clang:
 +        version: ["1.1", "2.1"]

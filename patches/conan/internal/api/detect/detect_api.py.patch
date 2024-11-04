@@ -1,8 +1,8 @@
-diff --git a/conan/internal/api/detect_api.py b/conan/internal/api/detect_api.py
-index 697a02960..82eb96bd4 100644
---- a/conan/internal/api/detect_api.py
-+++ b/conan/internal/api/detect_api.py
-@@ -14,6 +14,8 @@ def detect_os():
+diff --git a/conan/internal/api/detect/detect_api.py b/conan/internal/api/detect/detect_api.py
+index 96879adf6..ec10ac4c9 100644
+--- a/conan/internal/api/detect/detect_api.py
++++ b/conan/internal/api/detect/detect_api.py
+@@ -15,6 +15,8 @@ def detect_os():
      the_os = platform.system()
      if the_os == "Darwin":
          the_os = "Macos"
@@ -11,7 +11,7 @@ index 697a02960..82eb96bd4 100644
      return the_os
  
  
-@@ -27,6 +29,8 @@ def detect_arch():
+@@ -28,6 +30,8 @@ def detect_arch():
          arch = _get_solaris_architecture()
      elif system == "AIX":
          arch = _get_aix_architecture()
@@ -20,7 +20,7 @@ index 697a02960..82eb96bd4 100644
      if arch:
          return arch
  
-@@ -515,6 +519,8 @@ def detect_clang_compiler(compiler_exe="clang"):
+@@ -516,6 +520,8 @@ def detect_clang_compiler(compiler_exe="clang"):
              return None, None, None
          if "Apple" in out:
              compiler = "apple-clang"
