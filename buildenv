@@ -1,6 +1,6 @@
 # bump: conan-version /CONAN_VERSION='(.*)'/ https://github.com/conan-io/conan.git|semver:*
 
-CONAN_VERSION='2.9.1'
+CONAN_VERSION='2.9.3'
 export ZOPEN_STABLE_TAG="${CONAN_VERSION}"
 export ZOPEN_STABLE_URL='https://github.com/conan-io/conan.git'
 export ZOPEN_STABLE_DEPS='python'
